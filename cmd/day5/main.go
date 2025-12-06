@@ -68,7 +68,7 @@ func (p pantry) getFreshItems() int {
 func main() {
 	warehouse := pantry{}
 	hitBlank := false
-	files.ProcessFileWithEmpty("../../internal/input/day5.txt", func(line string) (pantry, error) {
+	files.ProcessFile("../../internal/input/day5.txt", true, true, func(line string) (pantry, error) {
 		if line == "" {
 			hitBlank = true
 			return warehouse, nil

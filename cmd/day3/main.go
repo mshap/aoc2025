@@ -51,7 +51,7 @@ func calcVoltage(cells []int) int {
 }
 
 func main() {
-	banks := files.ProcessFile("../../internal/input/day3.txt", func(line string) (batteryBank, error) {
+	banks := files.ProcessFile("../../internal/input/day3.txt", false, true, func(line string) (batteryBank, error) {
 		ints := make([]int, 0, len(line))
 		for i := 0; i < len(line); i++ {
 			volt, _ := strconv.Atoi(string(line[i]))

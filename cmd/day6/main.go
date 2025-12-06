@@ -3,7 +3,6 @@ package main
 import (
 	"aoc2025/internal/files"
 	"fmt"
-	"slices"
 	"strconv"
 	"strings"
 )
@@ -18,8 +17,10 @@ const (
 )
 
 type mathProblem struct {
-	nums []int
-	op   operation
+	numsStr []string
+	nums    []int
+	op      operation
+	length  int
 }
 
 func (m mathProblem) calculate() int {
@@ -40,38 +41,57 @@ func (m mathProblem) calculate() int {
 	return total
 }
 
+func (m *mathProblem) convert() {
+	for i := 0; i < m.length; i++ {
+		var str string
+		for j, s := range m.numsStr {
+			if j == len(m.numsStr)-1 {
+				continue
+			}
+			str += string(s[i])
+		}
+		num, _ := strconv.Atoi(strings.TrimSpace(str))
+		m.nums = append(m.nums, num)
+	}
+}
+
+func createOperations(opLine string) []*mathProblem {
+	parts := strings.Split(opLine, " ")
+	var problems []*mathProblem
+
+	var op operation
+	var problem *mathProblem
+	for i := 0; i < len(parts); i++ {
+		if parts[i] != "" {
+			op = operation(parts[i])
+			problem = &mathProblem{op: op}
+			problems = append(problems, problem)
+		}
+		problem.length = problem.length + 1
+	}
+	return problems
+}
+
 func main() {
 
-	vals := files.ProcessFile("../../internal/input/day6.txt", func(line string) ([]string, error) {
-		parts := strings.Split(line, " ")
-
-		for i := 0; i < len(parts); i++ {
-			parts[i] = strings.TrimSpace(parts[i])
-		}
-
-		return slices.DeleteFunc(parts, func(s string) bool {
-			return s == ""
-		}), nil
+	lines := files.ProcessFile("../../internal/input/day6.txt", false, false, func(line string) (string, error) {
+		return line, nil
 	})
 
-	size := len(vals[0])
-	maths := make([]mathProblem, size)
+	opLine := lines[len(lines)-1]
 
-	for i := 0; i < len(vals); i++ {
-		for j := 0; j < size; j++ {
-			if i < len(vals)-1 {
-				num, _ := strconv.Atoi(vals[i][j])
-				maths[j].nums = append(maths[j].nums, num)
-			} else {
-				maths[j].op = operation(vals[i][j])
-			}
-
+	maths := createOperations(opLine)
+	for _, line := range lines {
+		x := 0
+		for _, p := range maths {
+			p.numsStr = append(p.numsStr, line[x:x+p.length])
+			x += (p.length + 1)
 		}
 	}
 
-	fmt.Printf("%v\n", maths)
 	total := 0
 	for _, v := range maths {
+		v.convert()
 		total += v.calculate()
 	}
 	fmt.Printf("Total: %d\n", total)

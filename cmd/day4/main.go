@@ -77,7 +77,7 @@ func (w *warehouse) getAbove(row, start, end int) int {
 // }
 
 func main() {
-	rows := files.ProcessFile("../../internal/input/day4.txt", func(line string) ([]space, error) {
+	rows := files.ProcessFile("../../internal/input/day4.txt", false, true, func(line string) ([]space, error) {
 		var row []space
 		for _, c := range line {
 			var filled int
