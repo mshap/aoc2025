@@ -9,7 +9,7 @@ import (
 
 func ProcessFile[T any](fileName string, parser func(string) (T, error)) []T {
 
-	inputLines, err := readInputFile(fileName)
+	inputLines, err := readInputFile(fileName, true)
 
 	if err != nil {
 		fmt.Printf("Error reading input file: %v\n", err)
@@ -29,7 +29,29 @@ func ProcessFile[T any](fileName string, parser func(string) (T, error)) []T {
 	return ts
 }
 
-func readInputFile(filename string) ([]string, error) {
+func ProcessFileWithEmpty[T any](fileName string, parser func(string) (T, error)) []T {
+
+	inputLines, err := readInputFile(fileName, false)
+
+	if err != nil {
+		fmt.Printf("Error reading input file: %v\n", err)
+		return nil
+	}
+
+	fmt.Printf("Read %d lines from input file\n", len(inputLines))
+	var ts []T = []T{}
+	// Print first few lines as example
+	for _, line := range inputLines {
+		t, err := parser(line)
+		if err == nil {
+			ts = append(ts, t)
+		}
+	}
+
+	return ts
+}
+
+func readInputFile(filename string, skipEmpty bool) ([]string, error) {
 	file, err := os.Open(filename)
 	if err != nil {
 		return nil, err
@@ -41,7 +63,7 @@ func readInputFile(filename string) ([]string, error) {
 
 	for scanner.Scan() {
 		line := strings.TrimSpace(scanner.Text())
-		if line != "" { // Skip empty lines
+		if !skipEmpty || line != "" { // Skip empty lines
 			lines = append(lines, line)
 		}
 	}
