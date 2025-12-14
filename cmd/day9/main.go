@@ -4,13 +4,20 @@ import (
 	"aoc2025/internal/files"
 	"fmt"
 	"math"
-	"slices"
 	"strconv"
 	"strings"
 )
 
+type color string
+
+const (
+	RED   color = "red"
+	GREEN color = "green"
+)
+
 type tile struct {
 	col, row int
+	color    color
 }
 
 func main() {
@@ -20,24 +27,24 @@ func main() {
 
 		x, _ := strconv.Atoi(parts[1])
 		y, _ := strconv.Atoi(parts[0])
-		return tile{row: x, col: y}, nil
+		return tile{row: x, col: y, color: RED}, nil
 	})
 
-	slices.SortFunc(reds, func(a, b tile) int {
-		if a.row < b.row {
-			return -1
-		} else if a.row > b.row {
-			return 1
-		} else {
-			if a.col < b.col {
-				return -1
-			} else if a.col > b.col {
-				return 1
-			} else {
-				return 0
-			}
-		}
-	})
+	// slices.SortFunc(reds, func(a, b tile) int {
+	// 	if a.row < b.row {
+	// 		return -1
+	// 	} else if a.row > b.row {
+	// 		return 1
+	// 	} else {
+	// 		if a.col < b.col {
+	// 			return -1
+	// 		} else if a.col > b.col {
+	// 			return 1
+	// 		} else {
+	// 			return 0
+	// 		}
+	// 	}
+	// })
 	// fmt.Printf("%+v\n", reds)
 	max := 0.0
 
