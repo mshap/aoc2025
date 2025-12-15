@@ -36,15 +36,45 @@ func buildConnections(devices []device) map[string]*device {
 	return connections
 }
 
-func travel(device *device) int {
-	if device == out {
-		return 1
+func containsRequired(queue []string) (bool, bool) {
+	hasDac, hasFft := false, false
+	for _, name := range queue {
+		switch name {
+		case "dac":
+			hasDac = true
+		case "fft":
+			hasFft = true
+		}
 	}
 
+	return hasDac, hasFft
+}
+
+func travel(device *device, queue []string, visited *map[string]int) int {
+	hasDac, hasFft := containsRequired(queue)
+
+	key := fmt.Sprintf("%s-%t-%t", device.name, hasDac, hasFft)
+
+	if device == out {
+		if hasDac && hasFft {
+			return 1
+		} else {
+			return 0
+		}
+	}
+
+	if val, ok := (*visited)[key]; ok {
+		return val
+	}
+
+	queue = append(queue, device.name)
 	count := 0
 	for _, conn := range device.connects {
-		count += travel(conn)
+		count += travel(conn, queue, visited)
 	}
+
+	(*visited)[key] = count
+
 	return count
 }
 
@@ -61,7 +91,7 @@ func main() {
 
 	devicemap := buildConnections(devices)
 
-	paths := travel(devicemap["you"])
+	paths := travel(devicemap["svr"], []string{}, &map[string]int{})
 
 	fmt.Printf("total paths %d\n", paths)
 }
